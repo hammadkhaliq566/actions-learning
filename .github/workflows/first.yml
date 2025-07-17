@@ -8,5 +8,19 @@ jobs:
         steps:
         - name: Code Chekout
           uses: actions/checkout@v4
-        - name: Welcome to Repo
-          run: echo "Hello World"
+        - name: Create a new file
+          run: echo "Hammad" > file.txt
+        - name: Upload file
+          uses: actions/upload-artifact@v4
+          with:
+            name: test
+            path: file.txt
+
+    second-job:
+        needs: first-job
+        runs-on: ubuntu-latest
+        steps:
+        - name: Download Artifacts
+          uses: actions/download-artifact@v4
+          with:
+            name: test
