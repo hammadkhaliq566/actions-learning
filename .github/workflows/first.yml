@@ -2,6 +2,9 @@ name: My First Workflow
 
 on: push
 
+env:
+    username: hammad
+
 jobs:
     first-job:
         runs-on: ubuntu-latest
@@ -15,6 +18,8 @@ jobs:
           with:
             name: test
             path: file.txt
+        - name: List Env variable
+          run: echo $username
 
     second-job:
         needs: first-job
