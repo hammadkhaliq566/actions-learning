@@ -19,7 +19,9 @@ jobs:
             name: test
             path: file.txt
         - name: List Env variable
-          run: echo $username
+          run: echo ${{ vars.username }}
+        - name: List all secrets
+          run: echo ${{ secrets.password }}
 
     second-job:
         needs: first-job
