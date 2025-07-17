@@ -6,5 +6,7 @@ jobs:
     first-job:
         runs-on: ubuntu-latest
         steps:
+        - name: Code Chekout
+          uses: actions/checkout@v4
         - name: Welcome to Repo
           run: echo "Hello World"
