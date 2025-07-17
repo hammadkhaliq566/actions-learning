@@ -1,0 +1,10 @@
+name: My First Workflow
+
+on: push
+
+jobs:
+    first-job:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Welcome to Repo
+          run: echo "Hello World"
