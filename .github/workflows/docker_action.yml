@@ -20,7 +20,7 @@ jobs:
         - name: GHCR Login
           uses: docker/login-action@v3
           with:
-            registry: dhcr.io
+            registry: ghcr.io
             username: ${{ github.repository_owner }}
             password: ${{ secrets.GITHUB_TOKEN }}
     docker-build:
@@ -33,5 +33,3 @@ jobs:
             context: .
             push: true
             tags: ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
-    
-    
