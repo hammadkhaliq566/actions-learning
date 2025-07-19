@@ -1,20 +1,21 @@
-# Use the official Node.js LTS image
-FROM node:18
+# Use official Node.js LTS base image (slim version for smaller size)
+FROM node:18-slim
 
-# Set the working directory in the container
+# Set working directory inside container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Install production dependencies only, and avoid unnecessary layers
+# Copy only the files required for 'npm install'
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies (production only if NODE_ENV is set)
+RUN npm ci --omit=dev
 
-# Copy the rest of the application code
+# Copy only necessary files (avoiding .git, node_modules, etc.)
 COPY . .
 
-# Expose the port the app runs on
+# Expose the application port
 EXPOSE 3000
 
-# Define the command to run the app
+# Start the application
 CMD ["npm", "start"]
