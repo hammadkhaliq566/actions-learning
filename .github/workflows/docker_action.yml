@@ -57,6 +57,8 @@ jobs:
     needs: [docker-login,ghcr-login]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the Code
+        uses: actions/checkout@v4
       - name: Docker image Build
         uses: docker/build-push-action@v6
         with:
