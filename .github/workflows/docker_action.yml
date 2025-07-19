@@ -15,20 +15,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Cache Dependencies
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: test
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Checkout the Code
         uses: actions/checkout@v4
-      - name: Build Nodejs Application
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-      - run: npm install
-      - run: npm start
+          node-version: '18'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Clean npm cache (prevent corrupt installs)
+        run: npm cache clean --force
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run the app
+        run: npm start
 
   docker-login:
     needs: build
@@ -39,6 +49,7 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
   ghcr-login:
     needs: docker-login
     runs-on: ubuntu-latest
@@ -49,6 +60,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
   docker-build:
     needs: [docker-login,ghcr-login]
     runs-on: ubuntu-latest
