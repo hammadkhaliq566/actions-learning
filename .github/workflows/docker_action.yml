@@ -40,7 +40,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Docker Container Run
-          runs: |
+          run: |
             docker images
             docker run -d \
             ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
