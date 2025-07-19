@@ -13,3 +13,25 @@ jobs:
           with:
             username: ${{ vars.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
+    ghcr-login:
+      needs: docker-login
+      runs-on: ubuntu-latest
+      steps:    
+        - name: GHCR Login
+          uses: docker/login-action@v3
+          with:
+            registry: dhcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+    docker-build:
+      needs: [docker-login,ghcr-login]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Docker image Build
+          uses: docker/build-push-action@v6
+          with:
+            context: .
+            push: true
+            tags: ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
+    
+    
