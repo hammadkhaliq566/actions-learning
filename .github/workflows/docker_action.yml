@@ -1,46 +1,73 @@
 name: Build and Push Docker images
 
 on:
-    push:
-    workflow_dispatch: 
+  push:
+  workflow_dispatch:   
+  # pull_request: 
+  #   types: 
+  #     - opened
+  #     -  closed
+  #   branches:
+  #     - main
+  #     - 'feature/*'  
 
 jobs:
-    docker-login:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Docker Login
-          uses: docker/login-action@v3
-          with:
-            username: ${{ vars.DOCKER_USERNAME }}
-            password: ${{ secrets.DOCKER_PASSWORD }}
-    ghcr-login:
-      needs: docker-login
-      runs-on: ubuntu-latest
-      steps:    
-        - name: GHCR Login
-          uses: docker/login-action@v3
-          with:
-            registry: ghcr.io
-            username: ${{ github.repository_owner }}
-            password: ${{ secrets.GITHUB_TOKEN }}
-    docker-build:
-      needs: [docker-login,ghcr-login]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Docker image Build
-          uses: docker/build-push-action@v6
-          with:
-            context: .
-            push: true
-            tags: |
-              ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: test
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+      - name: Build Nodejs Application
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - run: npm install
+      - run: npm start
 
-    container-test:
-      needs: [docker-login,ghcr-login,docker-build]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Docker Container Run
-          run: |
-            docker images
-            docker run -d \
+  docker-login:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  ghcr-login:
+    needs: docker-login
+    runs-on: ubuntu-latest
+    steps:    
+      - name: GHCR Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  docker-build:
+    needs: [docker-login,ghcr-login]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker image Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
             ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
+
+  container-test:
+    needs: [docker-login,ghcr-login,docker-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker Container Run
+        run: |
+          docker images
+          docker run -d \
+          -p 3000:3000 \
+          ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
