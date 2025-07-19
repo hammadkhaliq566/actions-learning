@@ -42,6 +42,9 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+        
       - name: Docker image Build
         uses: docker/build-push-action@v6
         with:
