@@ -39,6 +39,7 @@ jobs:
 
       - name: Run the app
         run: npm start
+        timeout-minutes: 1
 
   docker-login:
     needs: build
