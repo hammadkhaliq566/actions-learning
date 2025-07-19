@@ -27,19 +27,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Clean npm cache (prevent corrupt installs)
         run: npm cache clean --force
 
       - name: Install dependencies
         run: npm install
-
-      - name: Run the app
-        run: npm start
-        timeout-minutes: 1
 
   docker-login:
     needs: build
