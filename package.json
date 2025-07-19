@@ -1,14 +1,15 @@
 {
-  "name": "sample-node-app",
+  "name": "sample-nodejs-app",
   "version": "1.0.0",
-  "description": "A simple Node.js application using Express.js",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "start": "node app.js"
   },
-  "author": "M Hammad",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^5.1.0"
   }
 }
