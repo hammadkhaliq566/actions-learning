@@ -29,9 +29,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Clean npm cache (prevent corrupt installs)
-        run: npm cache clean --force
-
       - name: Install dependencies
         run: npm install
 
