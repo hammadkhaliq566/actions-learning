@@ -32,4 +32,15 @@ jobs:
           with:
             context: .
             push: true
-            tags: ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
+            tags: |
+              ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
+
+    container-test:
+      needs: [docker-login,ghcr-login,docker-build]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Docker Container Run
+          runs: |
+            docker images
+            docker run -d \
+            ${{ vars.DOCKER_USERNAME }}/test:${{ github.sha }}
